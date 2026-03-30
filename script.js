@@ -13,6 +13,9 @@ const larguraCampo = 500;
 
 let alturaCobra = (larguraCobra = 10);
 
+let letra;
+
+//array de posições
 const posicoes = [
   {
     posicaoCobraX: 10,
@@ -21,9 +24,33 @@ const posicoes = [
 ];
 
 //movimento do mouse
-folhaDesenho.addEventListener("mousemove", function (e) {
-  posicoes[0].posicaoCobraX = e.clientX - larguraCobra / 2;
-  posicoes[0].posicaoCobraY = e.clientY - alturaCobra / 2;
+window.addEventListener("keydown", function (e) {
+  let velocidade = 1;
+  if (posicoes.length > 1) {
+    velocidade = posicoes.length / 2;
+  }
+  console.log(velocidade);
+
+  //movimento por teclas
+  switch (e.key.toLocaleLowerCase()) {
+    case "w":
+      posicoes[0].posicaoCobraY -= velocidade;
+      letra = "w";
+
+      break;
+    case "a":
+      posicoes[0].posicaoCobraX -= velocidade;
+      letra = "a";
+      break;
+    case "s":
+      posicoes[0].posicaoCobraY += velocidade;
+      letra = "s";
+      break;
+    case "d":
+      posicoes[0].posicaoCobraX += velocidade;
+      letra = "d";
+      break;
+  }
 });
 
 const tamanhoMaca = 10;
@@ -45,8 +72,13 @@ function principal() {
       alturaCobra,
     );
     if (i > 0) {
-      item.posicaoCobraX = posicoes[i - 1].posicaoCobraX - larguraCobra / 2;
-      item.posicaoCobraY = posicoes[i - 1].posicaoCobraY;
+      if (letra === "a" || letra === "d") {
+        item.posicaoCobraX = posicoes[0].posicaoCobraX - larguraCobra * i;
+        item.posicaoCobraY = posicoes[0].posicaoCobraY;
+      } else if (letra === "w" || letra === "s") {
+        item.posicaoCobraX = posicoes[0].posicaoCobraX;
+        item.posicaoCobraY = posicoes[0].posicaoCobraY - alturaCobra * i;
+      }
     }
   });
 
