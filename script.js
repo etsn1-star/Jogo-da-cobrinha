@@ -11,6 +11,8 @@ window.onload = function () {
 const alturaCampo = 500;
 const larguraCampo = 500;
 
+let velocidade = 1;
+
 let alturaCobra = (larguraCobra = 10);
 
 let letra;
@@ -22,32 +24,27 @@ const posicoes = [
     posicaoCobraY: 10,
   },
 ];
-
+let posicoesCabeca = [];
+let x;
+let y;
 //movimento do mouse
 window.addEventListener("keydown", function (e) {
-  let velocidade = 1;
   if (posicoes.length > 1) {
     velocidade = posicoes.length / 2;
   }
-  console.log(velocidade);
 
   //movimento por teclas
   switch (e.key.toLocaleLowerCase()) {
     case "w":
-      posicoes[0].posicaoCobraY -= velocidade;
       letra = "w";
-
       break;
     case "a":
-      posicoes[0].posicaoCobraX -= velocidade;
       letra = "a";
       break;
     case "s":
-      posicoes[0].posicaoCobraY += velocidade;
       letra = "s";
       break;
     case "d":
-      posicoes[0].posicaoCobraX += velocidade;
       letra = "d";
       break;
   }
@@ -61,25 +58,22 @@ function principal() {
   areaDesenho.fillStyle = "#000000";
   areaDesenho.fillRect(0, 0, larguraCampo, alturaCampo);
 
+  movimento();
+
   //desenha a cobra
   areaDesenho.fillStyle = "#ffffff";
 
   posicoes.forEach((item, i) => {
+    //faz ela ter movimentação "fluída"
+    //movimenta a cobra
+
+    //desenha os segmentos da cobra
     areaDesenho.fillRect(
       item.posicaoCobraX,
       item.posicaoCobraY,
       larguraCobra,
       alturaCobra,
     );
-    if (i > 0) {
-      if (letra === "a" || letra === "d") {
-        item.posicaoCobraX = posicoes[0].posicaoCobraX - larguraCobra * i;
-        item.posicaoCobraY = posicoes[0].posicaoCobraY;
-      } else if (letra === "w" || letra === "s") {
-        item.posicaoCobraX = posicoes[0].posicaoCobraX;
-        item.posicaoCobraY = posicoes[0].posicaoCobraY - alturaCobra * i;
-      }
-    }
   });
 
   macas();
@@ -106,5 +100,47 @@ function macas() {
         posicoes[posicoes.length - 1].posicaoCobraX - larguraCobra / 2,
       posicaoCobraY: posicoes[posicoes.length - 1].posicaoCobraY,
     });
+  }
+}
+function movimento() {
+  const antigas = posicoes.map((p) => ({
+    x: p.posicaoCobraX,
+    y: p.posicaoCobraY,
+  }));
+
+  switch (letra) {
+    case "a":
+      posicoes[0].posicaoCobraX -= velocidade;
+      break;
+    case "d":
+      posicoes[0].posicaoCobraX += velocidade;
+      break;
+    case "w":
+      posicoes[0].posicaoCobraY -= velocidade;
+      break;
+    case "s":
+      posicoes[0].posicaoCobraY += velocidade;
+      break;
+  }
+
+  for (let i = 1; i < posicoes.length; i++) {
+    switch (letra) {
+      case "a":
+        posicoes[i].posicaoCobraX = antigas[i - 1].x;
+        posicoes[i].posicaoCobraY = antigas[i - 1].y;
+        break;
+      case "d":
+        posicoes[i].posicaoCobraX = antigas[i - 1].x;
+        posicoes[i].posicaoCobraY = antigas[i - 1].y;
+        break;
+      case "w":
+        posicoes[i].posicaoCobraX = antigas[i - 1].x;
+        posicoes[i].posicaoCobraY = antigas[i - 1].y;
+        break;
+      case "s":
+        posicoes[i].posicaoCobraX = antigas[i - 1].x;
+        posicoes[i].posicaoCobraY = antigas[i - 1].y;
+        break;
+    }
   }
 }
