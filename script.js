@@ -55,19 +55,23 @@ let posicaoMacaX = (posicaoMacaY = 250);
 
 function principal() {
   //desenha o campo
-  areaDesenho.fillStyle = "#000000";
+  areaDesenho.fillStyle = "#2e7d32";
   areaDesenho.fillRect(0, 0, larguraCampo, alturaCampo);
 
   movimento();
 
   //desenha a cobra
-  areaDesenho.fillStyle = "#ffffff";
 
   posicoes.forEach((item, i) => {
     //faz ela ter movimentação "fluída"
     //movimenta a cobra
 
     //desenha os segmentos da cobra
+    if (i % 2 === 0) {
+      areaDesenho.fillStyle = "#ff0000";
+    } else {
+      areaDesenho.fillStyle = "#ffffff";
+    }
     areaDesenho.fillRect(
       item.posicaoCobraX,
       item.posicaoCobraY,
@@ -85,8 +89,10 @@ function macas() {
   areaDesenho.fillRect(posicaoMacaX, posicaoMacaY, tamanhoMaca, tamanhoMaca);
 
   if (
-    posicoes[0].posicaoCobraX == posicaoMacaX ||
-    posicoes[0].posicaoCobraY == posicaoMacaY
+    posicoes[0].posicaoCobraX > posicaoMacaX - tamanhoMaca / 2 &&
+    posicoes[0].posicaoCobraX < posicaoMacaX + tamanhoMaca / 2 &&
+    posicoes[0].posicaoCobraY > posicaoMacaY - tamanhoMaca / 2 &&
+    posicoes[0].posicaoCobraY < posicaoMacaY + tamanhoMaca / 2
   ) {
     posicaoMacaX =
       Math.floor(Math.random() * (larguraCampo - tamanhoMaca + 1)) +
@@ -144,3 +150,4 @@ function movimento() {
     }
   }
 }
+function telas() {}
