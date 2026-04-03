@@ -68,7 +68,7 @@ function principal() {
 
     //desenha os segmentos da cobra
     if (i % 2 === 0) {
-      areaDesenho.fillStyle = "#ff0000";
+      areaDesenho.fillStyle = "#7d322e";
     } else {
       areaDesenho.fillStyle = "#ffffff";
     }
@@ -85,7 +85,7 @@ function principal() {
 
 //gerador de maçãs
 function macas() {
-  areaDesenho.fillStyle = "#ff0000";
+  areaDesenho.fillStyle = "#322e7d";
   areaDesenho.fillRect(posicaoMacaX, posicaoMacaY, tamanhoMaca, tamanhoMaca);
 
   if (
