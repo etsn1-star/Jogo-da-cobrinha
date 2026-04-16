@@ -59,6 +59,7 @@ function principal() {
   areaDesenho.fillRect(0, 0, larguraCampo, alturaCampo);
 
   movimento();
+  gameOver();
 
   //desenha a cobra
 
@@ -150,4 +151,33 @@ function movimento() {
     }
   }
 }
-function telas() {}
+function gameOver() {
+  //direito
+  if (posicoes[0].posicaoCobraX - larguraCobra / 2 >= larguraCampo) {
+    posicoes[0].posicaoCobraX = 10;
+    posicoes[0].posicaoCobraY = 10;
+    letra = "";
+    posicoes.splice(1);
+  }
+  //esquerdo
+  if (posicoes[0].posicaoCobraX + larguraCobra / 2 <= 0) {
+    posicoes[0].posicaoCobraX = 10;
+    posicoes[0].posicaoCobraY = 10;
+    letra = "";
+    posicoes.splice(1);
+  }
+  //Em cima
+  if (posicoes[0].posicaoCobraY + alturaCobra / 2 <= 0) {
+    posicoes[0].posicaoCobraX = 10;
+    posicoes[0].posicaoCobraY = 10;
+    letra = "";
+    posicoes.splice(1);
+  }
+  //Em baixo
+  if (posicoes[0].posicaoCobraY - alturaCobra / 2 >= alturaCampo) {
+    posicoes[0].posicaoCobraX = 10;
+    posicoes[0].posicaoCobraY = 10;
+    letra = "";
+    posicoes.splice(1);
+  }
+}
