@@ -17,6 +17,14 @@ let alturaCobra = (larguraCobra = 10);
 
 let letra;
 
+const tamanhoMaca = 10;
+const frutas = [
+  {
+    posicaoMacaX: 250,
+    posicaoMacaY: 250,
+  },
+];
+
 //array de posições
 const posicoes = [
   {
@@ -24,9 +32,55 @@ const posicoes = [
     posicaoCobraY: 10,
   },
 ];
-let posicoesCabeca = [];
-let x;
-let y;
+const eventos = [
+  {
+    nome: "Chuva de frutas",
+    chance: 0.1,
+    contador: 0,
+    fimEvento: false,
+    ativo: true,
+
+    executar: function () {
+      if (this.probabilidade() && this.ativo == true) {
+        this.ativo = false;
+        console.log("evento chegou");
+        frutas.push({
+          posicaoMacaX: 50,
+          posicaoMacaY: 50,
+        });
+        setTimeout(() => {
+          this.fimEvento = true;
+        }, 30000);
+      }
+
+      if (this.fimEvento) {
+        frutas.pop();
+        this.ativo = true;
+        this.fimEvento = false;
+        console.log("evento acabou" + this.ativo);
+      }
+    },
+    //simula a probabilidade do jogo
+    probabilidade: function () {
+      //se chegar a 30, passou-se 1 segundo
+
+      this.contador++;
+      console.log(this.contador);
+      if (this.contador == 30) {
+        //testa a probabilidade
+        console.log("testada");
+
+        this.contador = 0;
+
+        if (Math.random() <= this.chance) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    },
+  },
+];
 //movimento do mouse
 window.addEventListener("keydown", function (e) {
   if (posicoes.length > 1) {
@@ -50,9 +104,6 @@ window.addEventListener("keydown", function (e) {
   }
 });
 
-const tamanhoMaca = 10;
-let posicaoMacaX = (posicaoMacaY = 250);
-
 function principal() {
   //desenha o campo
   areaDesenho.fillStyle = "#2e7d32";
@@ -60,6 +111,7 @@ function principal() {
 
   movimento();
   gameOver();
+  pontuacao();
 
   //desenha a cobra
 
@@ -81,33 +133,44 @@ function principal() {
     );
   });
 
+  eventos.forEach((item) => {
+    item.executar();
+  });
+
   macas();
 }
 
 //gerador de maçãs
 function macas() {
   areaDesenho.fillStyle = "#322e7d";
-  areaDesenho.fillRect(posicaoMacaX, posicaoMacaY, tamanhoMaca, tamanhoMaca);
+  frutas.forEach((item) => {
+    areaDesenho.fillRect(
+      item.posicaoMacaX,
+      item.posicaoMacaY,
+      tamanhoMaca,
+      tamanhoMaca,
+    );
 
-  if (
-    posicoes[0].posicaoCobraX > posicaoMacaX - tamanhoMaca / 2 &&
-    posicoes[0].posicaoCobraX < posicaoMacaX + tamanhoMaca / 2 &&
-    posicoes[0].posicaoCobraY > posicaoMacaY - tamanhoMaca / 2 &&
-    posicoes[0].posicaoCobraY < posicaoMacaY + tamanhoMaca / 2
-  ) {
-    posicaoMacaX =
-      Math.floor(Math.random() * (larguraCampo - tamanhoMaca + 1)) +
-      tamanhoMaca;
-    posicaoMacaY =
-      Math.floor(Math.random() * (larguraCampo - tamanhoMaca + 1)) +
-      tamanhoMaca;
+    if (
+      posicoes[0].posicaoCobraX > item.posicaoMacaX - tamanhoMaca / 2 &&
+      posicoes[0].posicaoCobraX < item.posicaoMacaX + tamanhoMaca / 2 &&
+      posicoes[0].posicaoCobraY > item.posicaoMacaY - tamanhoMaca / 2 &&
+      posicoes[0].posicaoCobraY < item.posicaoMacaY + tamanhoMaca / 2
+    ) {
+      item.posicaoMacaX =
+        Math.floor(Math.random() * (larguraCampo - tamanhoMaca + 1)) +
+        tamanhoMaca;
+      item.posicaoMacaY =
+        Math.floor(Math.random() * (larguraCampo - tamanhoMaca + 1)) +
+        tamanhoMaca;
 
-    posicoes.push({
-      posicaoCobraX:
-        posicoes[posicoes.length - 1].posicaoCobraX - larguraCobra / 2,
-      posicaoCobraY: posicoes[posicoes.length - 1].posicaoCobraY,
-    });
-  }
+      posicoes.push({
+        posicaoCobraX:
+          posicoes[posicoes.length - 1].posicaoCobraX - larguraCobra / 2,
+        posicaoCobraY: posicoes[posicoes.length - 1].posicaoCobraY,
+      });
+    }
+  });
 }
 function movimento() {
   const antigas = posicoes.map((p) => ({
@@ -180,4 +243,9 @@ function gameOver() {
     letra = "";
     posicoes.splice(1);
   }
+}
+function pontuacao() {
+  areaDesenho.fillStyle = "#000000";
+
+  areaDesenho.fillText("Pontuação: " + (posicoes.length - 1), 425, 15);
 }
