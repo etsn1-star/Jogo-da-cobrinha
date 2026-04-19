@@ -35,7 +35,7 @@ const posicoes = [
 const eventos = [
   {
     nome: "Chuva de frutas",
-    chance: 0.1,
+    chance: 0.03,
     contador: 0,
     fimEvento: false,
     ativo: true,
@@ -43,7 +43,7 @@ const eventos = [
     executar: function () {
       if (this.probabilidade() && this.ativo == true) {
         this.ativo = false;
-        console.log("evento chegou");
+
         frutas.push({
           posicaoMacaX: 50,
           posicaoMacaY: 50,
@@ -57,7 +57,6 @@ const eventos = [
         frutas.pop();
         this.ativo = true;
         this.fimEvento = false;
-        console.log("evento acabou" + this.ativo);
       }
     },
     //simula a probabilidade do jogo
@@ -65,10 +64,9 @@ const eventos = [
       //se chegar a 30, passou-se 1 segundo
 
       this.contador++;
-      console.log(this.contador);
+
       if (this.contador == 30) {
         //testa a probabilidade
-        console.log("testada");
 
         this.contador = 0;
 
@@ -77,6 +75,108 @@ const eventos = [
         } else {
           return false;
         }
+      }
+    },
+  },
+
+  {
+    nome: "bombinha",
+    chance: 0.05,
+    fimEvento: false,
+    ativo: true,
+    contador: 0,
+    posicaoX: 10,
+    posicaoY: 5,
+    tamanhoBomba: 30,
+    velocidadeBombaX: 5,
+    velocidadeBombaY: 5,
+    ricochete: 0.005,
+    desenho: false,
+    executar: function () {
+      if (this.probabilidade() && this.ativo == true) {
+        this.ativo = false;
+        this.desenho = true;
+
+        setTimeout(() => {
+          this.fimEvento = true;
+        }, 60000);
+      }
+      if (this.fimEvento) {
+        this.ativo = true;
+        this.fimEvento = false;
+        this.desenho = false;
+      }
+      if (this.desenho == true) {
+        this.desenharBomba();
+      }
+    },
+    //simula a probabilidade do jogo
+    probabilidade: function () {
+      //se chegar a 30, passou-se 1 segundo
+
+      this.contador++;
+
+      if (this.contador == 30) {
+        //testa a probabilidade
+
+        this.contador = 0;
+
+        if (Math.random() <= this.chance) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    },
+    desenharBomba: function () {
+      //muda a posição da bomba
+      this.posicaoX += this.velocidadeBombaX;
+      this.posicaoY += this.velocidadeBombaY;
+
+      //desenha a bomba
+      areaDesenho.fillStyle = "#000000";
+      areaDesenho.fillRect(
+        this.posicaoX,
+        this.posicaoY,
+        this.tamanhoBomba,
+        this.tamanhoBomba,
+      );
+
+      //detecta colisão com o campo
+      if (this.posicaoX >= larguraCampo) {
+        this.velocidadeBombaX *= -1;
+        this.velocidadeBombaY =
+          this.velocidadeBombaY +
+          (alturaCampo - this.posicaoY) * this.ricochete;
+      }
+      if (this.posicaoX <= 0) {
+        this.velocidadeBombaX *= -1;
+        this.velocidadeBombaY =
+          this.velocidadeBombaY +
+          (alturaCampo - this.posicaoY) * this.ricochete;
+      }
+      if (this.posicaoY >= alturaCampo) {
+        this.velocidadeBombaY *= -1;
+        this.velocidadeBombaX =
+          this.velocidadeBombaX +
+          (larguraCampo - this.posicaoX) * this.ricochete;
+      }
+      if (this.posicaoY <= 0) {
+        this.velocidadeBombaY *= -1;
+        this.velocidadeBombaX =
+          this.velocidadeBombaX +
+          (larguraCampo - this.posicaoX) * this.ricochete;
+      }
+
+      if (
+        posicoes[0].posicaoCobraX > this.posicaoX - this.tamanhoBomba / 2 &&
+        posicoes[0].posicaoCobraX < this.posicaoX + this.tamanhoBomba / 2 &&
+        posicoes[0].posicaoCobraY > this.posicaoY - this.tamanhoBomba / 2 &&
+        posicoes[0].posicaoCobraY < this.posicaoY + this.tamanhoBomba / 2 &&
+        posicoes.length != 1
+      ) {
+        posicoes.pop();
+        this.desenho = false;
       }
     },
   },
