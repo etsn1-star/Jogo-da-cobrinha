@@ -2,6 +2,127 @@
 const folhaDesenho = document.getElementById("desenho");
 const areaDesenho = folhaDesenho.getContext("2d");
 
+//Classes
+
+class Cobra {
+  //constrói a cobra
+  constructor(x, y) {
+    this.velocidade = 5;
+    this.nome = "Cadeia alimentar";
+    this.chance = 0.01;
+    this.contador = 0;
+    this.fimEvento = false;
+    this.ativo = true;
+    this.desenho = false;
+    this.direcao = 1;
+
+    //cria a cabeça
+    this.posicoes = [
+      {
+        posicaoCobraX: x,
+        posicaoCobraY: y,
+      },
+    ];
+  }
+  executar() {
+    console.log(this.direcao);
+    //executa se a probabilidade for correta
+    if (probabilidade(this) && this.ativo == true) {
+      this.ativo = false;
+      this.desenho = true;
+
+      setTimeout(() => {
+        this.fimEvento = true;
+        this.posicoes.splice(1);
+      }, 100000);
+    }
+    if (this.fimEvento) {
+      this.ativo = true;
+      this.fimEvento = false;
+      this.desenho = false;
+    }
+    if (this.desenho == true) {
+      this.antigas = this.posicoes.map((p) => ({
+        x: p.posicaoCobraX,
+        y: p.posicaoCobraY,
+      }));
+
+      areaDesenho.fillStyle = "#346789";
+      areaDesenho.fillRect(
+        this.posicoes[0].posicaoCobraX,
+        this.posicoes[0].posicaoCobraY,
+        10,
+        10,
+      );
+
+      //evita bugs estranhos por haver duas frutas
+      if (this.direcao == 1) {
+        //cria IA simples, movimento horizontal
+        if (this.posicoes[0].posicaoCobraX < frutas[0].posicaoMacaX) {
+          this.posicoes[0].posicaoCobraX += this.velocidade;
+        } else if (this.posicoes[0].posicaoCobraX > frutas[0].posicaoMacaX) {
+          this.posicoes[0].posicaoCobraX -= this.velocidade;
+        }
+        if (
+          Math.abs(this.posicoes[0].posicaoCobraX - frutas[0].posicaoMacaX) <
+          this.velocidade
+        ) {
+          this.direcao = 0;
+        }
+      }
+      if (this.direcao == 0) {
+        console.log("entrei na vertical");
+        //cria IA simples, movimento vertical
+        if (this.posicoes[0].posicaoCobraY > frutas[0].posicaoMacaY) {
+          this.posicoes[0].posicaoCobraY -= this.velocidade;
+          console.log("cobra maior que fruta");
+        } else if (this.posicoes[0].posicaoCobraY < frutas[0].posicaoMacaY) {
+          this.posicoes[0].posicaoCobraY += this.velocidade;
+          console.log("fruta maior que cobra");
+        }
+        if (
+          Math.abs(this.posicoes[0].posicaoCobraY - frutas[0].posicaoMacaY) <
+          this.velocidade
+        ) {
+          console.log("posicao igual");
+          this.direcao = 1;
+        }
+      }
+
+      for (let i = 1; i < this.posicoes.length; i++) {
+        areaDesenho.fillStyle = "#346789";
+        areaDesenho.fillRect(
+          this.posicoes[i].posicaoCobraX,
+          this.posicoes[i].posicaoCobraY,
+          10,
+          10,
+        );
+
+        this.posicoes[i].posicaoCobraX = this.antigas[i - 1].x;
+        this.posicoes[i].posicaoCobraY = this.antigas[i - 1].y;
+      }
+      for (let i = 0; i < this.posicoes.length; i++) {
+        if (
+          posicoes[0].posicaoCobraX >
+            this.posicoes[i].posicaoCobraX - larguraCobra / 2 &&
+          posicoes[0].posicaoCobraX <
+            this.posicoes[i].posicaoCobraX + larguraCobra / 2 &&
+          posicoes[0].posicaoCobraY >
+            this.posicoes[i].posicaoCobraY - alturaCobra / 2 &&
+          posicoes[0].posicaoCobraY <
+            this.posicoes[i].posicaoCobraY + alturaCobra / 2
+        ) {
+          gameOver(true);
+          this.desenho = false;
+        }
+      }
+    }
+  }
+  velocidade() {}
+}
+
+const cobraIA = new Cobra(10, 10);
+
 //define a taxa de quadros por segundo
 window.onload = function () {
   setInterval(principal, 1000 / 30);
@@ -32,16 +153,18 @@ const posicoes = [
     posicaoCobraY: 10,
   },
 ];
+//cria a cobra IA
+
 const eventos = [
   {
     nome: "Chuva de frutas",
-    chance: 0.03,
+    chance: 0.05,
     contador: 0,
     fimEvento: false,
     ativo: true,
 
     executar: function () {
-      if (this.probabilidade() && this.ativo == true) {
+      if (probabilidade(this) && this.ativo == true) {
         this.ativo = false;
 
         frutas.push({
@@ -60,28 +183,11 @@ const eventos = [
       }
     },
     //simula a probabilidade do jogo
-    probabilidade: function () {
-      //se chegar a 30, passou-se 1 segundo
-
-      this.contador++;
-
-      if (this.contador == 30) {
-        //testa a probabilidade
-
-        this.contador = 0;
-
-        if (Math.random() <= this.chance) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    },
   },
 
   {
     nome: "bombinha",
-    chance: 0.05,
+    chance: 0.03,
     fimEvento: false,
     ativo: true,
     contador: 0,
@@ -93,7 +199,7 @@ const eventos = [
     ricochete: 0.005,
     desenho: false,
     executar: function () {
-      if (this.probabilidade() && this.ativo == true) {
+      if (probabilidade(this) && this.ativo == true) {
         this.ativo = false;
         this.desenho = true;
 
@@ -105,29 +211,14 @@ const eventos = [
         this.ativo = true;
         this.fimEvento = false;
         this.desenho = false;
+        this.velocidadeBombaX = 5;
+        this.velocidadeBombaY = 5;
       }
       if (this.desenho == true) {
         this.desenharBomba();
       }
     },
-    //simula a probabilidade do jogo
-    probabilidade: function () {
-      //se chegar a 30, passou-se 1 segundo
-
-      this.contador++;
-
-      if (this.contador == 30) {
-        //testa a probabilidade
-
-        this.contador = 0;
-
-        if (Math.random() <= this.chance) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    },
+    //desenha a bomba
     desenharBomba: function () {
       //muda a posição da bomba
       this.posicaoX += this.velocidadeBombaX;
@@ -173,13 +264,23 @@ const eventos = [
         posicoes[0].posicaoCobraX < this.posicaoX + this.tamanhoBomba / 2 &&
         posicoes[0].posicaoCobraY > this.posicaoY - this.tamanhoBomba / 2 &&
         posicoes[0].posicaoCobraY < this.posicaoY + this.tamanhoBomba / 2 &&
-        posicoes.length != 1
+        posicoes.length > 1
       ) {
         posicoes.pop();
+        this.desenho = false;
+      } else if (
+        posicoes.length == 1 &&
+        posicoes[0].posicaoCobraX > this.posicaoX - this.tamanhoBomba / 2 &&
+        posicoes[0].posicaoCobraX < this.posicaoX + this.tamanhoBomba / 2 &&
+        posicoes[0].posicaoCobraY > this.posicaoY - this.tamanhoBomba / 2 &&
+        posicoes[0].posicaoCobraY < this.posicaoY + this.tamanhoBomba / 2
+      ) {
+        gameOver(true);
         this.desenho = false;
       }
     },
   },
+  cobraIA,
 ];
 //movimento do mouse
 window.addEventListener("keydown", function (e) {
@@ -270,6 +371,27 @@ function macas() {
         posicaoCobraY: posicoes[posicoes.length - 1].posicaoCobraY,
       });
     }
+    if (
+      cobraIA.posicoes[0].posicaoCobraX > item.posicaoMacaX - tamanhoMaca / 2 &&
+      cobraIA.posicoes[0].posicaoCobraX < item.posicaoMacaX + tamanhoMaca / 2 &&
+      cobraIA.posicoes[0].posicaoCobraY > item.posicaoMacaY - tamanhoMaca / 2 &&
+      cobraIA.posicoes[0].posicaoCobraY < item.posicaoMacaY + tamanhoMaca / 2
+    ) {
+      item.posicaoMacaX =
+        Math.floor(Math.random() * (larguraCampo - tamanhoMaca + 1)) +
+        tamanhoMaca;
+      item.posicaoMacaY =
+        Math.floor(Math.random() * (larguraCampo - tamanhoMaca + 1)) +
+        tamanhoMaca;
+
+      cobraIA.posicoes.push({
+        posicaoCobraX:
+          cobraIA.posicoes[cobraIA.posicoes.length - 1].posicaoCobraX -
+          larguraCobra / 2,
+        posicaoCobraY:
+          cobraIA.posicoes[cobraIA.posicoes.length - 1].posicaoCobraY,
+      });
+    }
   });
 }
 function movimento() {
@@ -314,38 +436,47 @@ function movimento() {
     }
   }
 }
-function gameOver() {
-  //direito
-  if (posicoes[0].posicaoCobraX - larguraCobra / 2 >= larguraCampo) {
+function gameOver(evento) {
+  //direito, esquerdo, cima e baixo
+  if (
+    posicoes[0].posicaoCobraX - larguraCobra / 2 >= larguraCampo ||
+    posicoes[0].posicaoCobraX + larguraCobra / 2 <= 0 ||
+    posicoes[0].posicaoCobraY + alturaCobra / 2 <= 0 ||
+    posicoes[0].posicaoCobraY - alturaCobra / 2 >= alturaCampo
+  ) {
     posicoes[0].posicaoCobraX = 10;
     posicoes[0].posicaoCobraY = 10;
     letra = "";
     posicoes.splice(1);
+    velocidade = 1;
   }
-  //esquerdo
-  if (posicoes[0].posicaoCobraX + larguraCobra / 2 <= 0) {
+  if (evento) {
     posicoes[0].posicaoCobraX = 10;
     posicoes[0].posicaoCobraY = 10;
     letra = "";
     posicoes.splice(1);
-  }
-  //Em cima
-  if (posicoes[0].posicaoCobraY + alturaCobra / 2 <= 0) {
-    posicoes[0].posicaoCobraX = 10;
-    posicoes[0].posicaoCobraY = 10;
-    letra = "";
-    posicoes.splice(1);
-  }
-  //Em baixo
-  if (posicoes[0].posicaoCobraY - alturaCobra / 2 >= alturaCampo) {
-    posicoes[0].posicaoCobraX = 10;
-    posicoes[0].posicaoCobraY = 10;
-    letra = "";
-    posicoes.splice(1);
+    velocidade = 1;
   }
 }
 function pontuacao() {
   areaDesenho.fillStyle = "#000000";
 
   areaDesenho.fillText("Pontuação: " + (posicoes.length - 1), 425, 15);
+}
+function probabilidade(objeto) {
+  //se chegar a 30, passou-se 1 segundo
+
+  objeto.contador++;
+
+  if (objeto.contador == 30) {
+    //testa a probabilidade
+
+    objeto.contador = 0;
+
+    if (Math.random() <= objeto.chance) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
