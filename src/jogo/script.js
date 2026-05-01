@@ -448,16 +448,24 @@ window.addEventListener("keydown", function (e) {
   //movimento por teclas
   switch (e.key.toLocaleLowerCase()) {
     case "w":
-      letra = "w";
+      if (letra != "s") {
+        letra = "w";
+      }
       break;
     case "a":
-      letra = "a";
+      if (letra != "d") {
+        letra = "a";
+      }
       break;
     case "s":
-      letra = "s";
+      if (letra != "w") {
+        letra = "s";
+      }
       break;
     case "d":
-      letra = "d";
+      if (letra != "a") {
+        letra = "d";
+      }
       break;
   }
 });
