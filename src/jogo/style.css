@@ -1,0 +1,20 @@
+.container {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+.mensagens {
+  position: absolute;
+  z-index: 10;
+}
+#mensagem {
+  display: none;
+  font-family: Bitcount Grid Double;
+  font-size: 3rem;
+  color: black;
+}
+canvas {
+  position: absolute;
+  z-index: 1;
+}

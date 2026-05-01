@@ -1,6 +1,7 @@
 //define as variaveis principais
 const folhaDesenho = document.getElementById("desenho");
 const areaDesenho = folhaDesenho.getContext("2d");
+const mensagem = document.getElementById("mensagem");
 
 let tempoJogo = 0;
 let tempoJogoContador = 0;
@@ -28,16 +29,23 @@ class Cobra {
     ];
   }
   executar() {
-    console.log(this.direcao);
     //executa se a probabilidade for correta
     if (probabilidade(this) && this.ativo == true) {
       this.ativo = false;
       this.desenho = true;
+      umEventoSo();
+      mensagem.innerText = this.nome;
+      mensagem.style.display = "block";
 
       setTimeout(() => {
         this.fimEvento = true;
         this.posicoes.splice(1);
+        reativarEventos();
       }, 100000);
+
+      setTimeout(() => {
+        mensagem.style.display = "none";
+      }, 3000);
     }
     if (this.fimEvento) {
       this.ativo = true;
@@ -147,19 +155,21 @@ class incendio {
   }
 
   executar() {
-    for (let i = 0; i < eventos.length; i++) {
-      if (this.ativo == true && this.ativo == eventos[i].ativo) {
-      }
-    }
-
     if (probabilidade(this) && this.ativo == true) {
       this.ativo = false;
       this.desenho = true;
+      umEventoSo();
+      mensagem.innerText = this.nome;
+      mensagem.style.display = "block";
 
       setTimeout(() => {
         this.fimEvento = true;
         this.incendio.splice(0);
+        reativarEventos();
       }, 100000);
+      setTimeout(() => {
+        mensagem.style.display = "none";
+      }, 3000);
     }
     if (this.fimEvento) {
       this.ativo = true;
@@ -294,7 +304,11 @@ const eventos = [
 
     executar: function () {
       if (probabilidade(this) && this.ativo == true) {
+        mensagem.innerText = this.nome;
+        mensagem.style.display = "block";
+
         this.ativo = false;
+        umEventoSo();
 
         frutas.push({
           posicaoMacaX: 50,
@@ -303,12 +317,17 @@ const eventos = [
         setTimeout(() => {
           this.fimEvento = true;
         }, 30000);
+
+        setTimeout(() => {
+          mensagem.style.display = "none";
+        }, 3000);
       }
 
       if (this.fimEvento) {
         frutas.pop();
         this.ativo = true;
         this.fimEvento = false;
+        reativarEventos();
       }
     },
     //simula a probabilidade do jogo
@@ -329,12 +348,20 @@ const eventos = [
     desenho: false,
     executar: function () {
       if (probabilidade(this) && this.ativo == true) {
+        mensagem.innerText = this.nome;
+        mensagem.style.display = "block";
+
         this.ativo = false;
         this.desenho = true;
+        umEventoSo();
 
         setTimeout(() => {
           this.fimEvento = true;
+          reativarEventos();
         }, 60000);
+        setTimeout(() => {
+          mensagem.style.display = "none";
+        }, 3000);
       }
       if (this.fimEvento) {
         this.ativo = true;
@@ -583,22 +610,22 @@ function gameOver(evento) {
     posicoes[0].posicaoCobraX = 10;
     posicoes[0].posicaoCobraY = 10;
     letra = "";
-    posicoes.splice(1);
+
     velocidade = 1;
     localStorage.setItem("pontuacao", posicoes.length - 1);
     localStorage.setItem("tempo", tempoJogo);
-
+    posicoes.splice(1);
     window.location.href = "../paginasExtras/gameOver/gameover.html";
   }
   if (evento) {
     posicoes[0].posicaoCobraX = 10;
     posicoes[0].posicaoCobraY = 10;
     letra = "";
-    posicoes.splice(1);
+
     velocidade = 1;
     localStorage.setItem("pontuacao", posicoes.length - 1);
     localStorage.setItem("tempo", tempoJogo);
-
+    posicoes.splice(1);
     window.location.href = "../paginasExtras/gameOver/gameover.html";
   }
 }
@@ -623,4 +650,10 @@ function probabilidade(objeto) {
       return false;
     }
   }
+}
+function umEventoSo() {
+  eventos.forEach((item) => (item.ativo = false));
+}
+function reativarEventos(objeto) {
+  eventos.forEach((item) => (item.ativo = true));
 }
