@@ -1,0 +1,49 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  background-color: #32cd32;
+}
+.title {
+  font-size: 8rem;
+  font-family: Bitcount Grid Double;
+  font-weight: bold;
+}
+.middle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 2;
+  background-color: #90ee90;
+  gap: 30vw;
+  font-size: 2rem;
+}
+.below {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  background-color: #90ee90;
+}
+.botao {
+  display: flex;
+  background-color: #7d322e;
+  width: 20vw;
+  height: 15vh;
+  justify-content: center;
+  align-items: center;
+  border-radius: 48%;
+  font-size: 1.5rem;
+  font-family: Bitcount Grid Double;
+  cursor: pointer;
+  transition: 0, 3s;
+}
+.botao:hover {
+  background-color: #4d1f1c;
+}

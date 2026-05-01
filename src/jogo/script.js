@@ -2,6 +2,9 @@
 const folhaDesenho = document.getElementById("desenho");
 const areaDesenho = folhaDesenho.getContext("2d");
 
+let tempoJogo = 0;
+let tempoJogoContador = 0;
+
 //Classes
 
 class Cobra {
@@ -121,7 +124,133 @@ class Cobra {
   velocidade() {}
 }
 
+class incendio {
+  constructor(x, y) {
+    this.posicoesIncendio = [
+      {
+        x: x,
+        y: y,
+      },
+    ];
+    this.tamanhoIncendio = 10;
+    this.posicaoX;
+    this.posicaoY;
+    this.nome = "fogo fogaréu";
+    this.chance = 0.05;
+    this.chance2 = 0.1;
+    this.contador = 0;
+    this.contador2 = 0;
+    this.fimEvento = false;
+    this.ativo = true;
+    this.desenho = false;
+    this.direcao = 1;
+  }
+
+  executar() {
+    for (let i = 0; i < eventos.length; i++) {
+      if (this.ativo == true && this.ativo == eventos[i].ativo) {
+      }
+    }
+
+    if (probabilidade(this) && this.ativo == true) {
+      this.ativo = false;
+      this.desenho = true;
+
+      setTimeout(() => {
+        this.fimEvento = true;
+        this.incendio.splice(0);
+      }, 100000);
+    }
+    if (this.fimEvento) {
+      this.ativo = true;
+      this.fimEvento = false;
+      this.desenho = false;
+    }
+    if (this.desenho == true) {
+      areaDesenho.fillStyle = "#ffff00";
+      areaDesenho.fillRect(
+        this.posicoesIncendio[0].x,
+        this.posicoesIncendio[0].y,
+        this.tamanhoIncendio,
+        this.tamanhoIncendio,
+      );
+
+      for (let i = 0; i < this.posicoesIncendio.length; i++) {
+        const pos = this.posicoesIncendio[i];
+
+        this.posicaoX =
+          Math.floor(
+            Math.random() *
+              (this.posicoesIncendio[i].x +
+                25 -
+                (this.posicoesIncendio[i].x - 25) +
+                1),
+          ) +
+          (this.posicoesIncendio[i].x - 25);
+        this.posicaoY =
+          Math.floor(
+            Math.random() *
+              (this.posicoesIncendio[i].y +
+                25 -
+                (this.posicoesIncendio[i].y - 25) +
+                1),
+          ) +
+          this.posicoesIncendio[i].y -
+          25;
+
+        if (this.probabilidadeIncendio()) {
+          if (
+            this.posicaoX <= larguraCampo &&
+            this.posicaoY <= alturaCampo &&
+            this.posicoesIncendio.length
+          ) {
+            this.posicoesIncendio.push({
+              x: this.posicaoX,
+              y: this.posicaoY,
+            });
+          }
+        }
+        areaDesenho.fillRect(
+          this.posicoesIncendio[i].x,
+          this.posicoesIncendio[i].y,
+          this.tamanhoIncendio,
+          this.tamanhoIncendio,
+        );
+        console.log("entrei");
+        if (
+          posicoes[0].posicaoCobraX >
+            this.posicoesIncendio[i].x - this.tamanhoIncendio / 2 &&
+          posicoes[0].posicaoCobraX <
+            this.posicoesIncendio[i].x + this.tamanhoIncendio / 2 &&
+          posicoes[0].posicaoCobraY >
+            this.posicoesIncendio[i].y - this.tamanhoIncendio / 2 &&
+          posicoes[0].posicaoCobraY <
+            this.posicoesIncendio[i].y + this.tamanhoIncendio / 2
+        ) {
+          gameOver(true);
+          this.desenho = false;
+        }
+      }
+    }
+  }
+  probabilidadeIncendio() {
+    this.contador2++;
+    if (this.contador2 == 30) {
+      //testa a probabilidade
+
+      this.contador2 = 0;
+
+      if (Math.random() <= this.chance2) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+}
+
 const cobraIA = new Cobra(10, 10);
+const fogo = new incendio(250, 220);
 
 //define a taxa de quadros por segundo
 window.onload = function () {
@@ -281,6 +410,7 @@ const eventos = [
     },
   },
   cobraIA,
+  fogo,
 ];
 //movimento do mouse
 window.addEventListener("keydown", function (e) {
@@ -306,6 +436,12 @@ window.addEventListener("keydown", function (e) {
 });
 
 function principal() {
+  tempoJogoContador++;
+  if (tempoJogoContador == 30) {
+    tempoJogo++;
+    tempoJogoContador = 0;
+  }
+
   //desenha o campo
   areaDesenho.fillStyle = "#2e7d32";
   areaDesenho.fillRect(0, 0, larguraCampo, alturaCampo);
@@ -449,6 +585,10 @@ function gameOver(evento) {
     letra = "";
     posicoes.splice(1);
     velocidade = 1;
+    localStorage.setItem("pontuacao", posicoes.length - 1);
+    localStorage.setItem("tempo", tempoJogo);
+
+    window.location.href = "../paginasExtras/gameOver/gameover.html";
   }
   if (evento) {
     posicoes[0].posicaoCobraX = 10;
@@ -456,6 +596,10 @@ function gameOver(evento) {
     letra = "";
     posicoes.splice(1);
     velocidade = 1;
+    localStorage.setItem("pontuacao", posicoes.length - 1);
+    localStorage.setItem("tempo", tempoJogo);
+
+    window.location.href = "../paginasExtras/gameOver/gameover.html";
   }
 }
 function pontuacao() {
